@@ -59,7 +59,17 @@ len(df_datamart)
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Analisis Visual de los datos utilizando fundamentos estadisticos
+
+# COMMAND ----------
+
 create_report(df_datamart).show()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Analisis Univariado y Bivariado de los datos
 
 # COMMAND ----------
 
@@ -122,6 +132,11 @@ df_datamart.columns
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Tratamiento de Datos Nulos
+
+# COMMAND ----------
+
 #Tratamiento de Datos Nulos
 df_datamart.isnull().sum()
 
@@ -157,6 +172,11 @@ df_datamart.shape
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Tratamiento de Outliers
+
+# COMMAND ----------
+
 # Tratamiento de Datos Atipicos con Z-Score
 z = np.abs(stats.zscore(df_datamart[['CANT_TIPO_PRODUCTO_1', 'CANT_TIPO_PRODUCTO_2', 'CANT_TIPO_PRODUCTO_3', 'CANT_TIPO_PRODUCTO_4',
                                        'CANT_TIPO_PRODUCTO_5', 'CANT_TIPO_PRODUCTO_6', 'PRECIO_TOTAL']]))
@@ -174,6 +194,11 @@ df_datamart.shape
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Re escalamiento de datos
+
+# COMMAND ----------
+
 # Variables a ser reescaladas con MinMax Encoder
 features_mimmax = ['CANT_TIPO_PRODUCTO_1', 'CANT_TIPO_PRODUCTO_2', 'CANT_TIPO_PRODUCTO_3', 'CANT_TIPO_PRODUCTO_4',
                                        'CANT_TIPO_PRODUCTO_5', 'CANT_TIPO_PRODUCTO_6', 'PRECIO_TOTAL']
@@ -181,6 +206,11 @@ features_mimmax = ['CANT_TIPO_PRODUCTO_1', 'CANT_TIPO_PRODUCTO_2', 'CANT_TIPO_PR
 objeto_scaler = MinMaxScaler()
 df_datamart[features_mimmax] = objeto_scaler.fit_transform(df_datamart[features_mimmax])
 df_datamart.head()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Tratamiento de variables cualitativas nominales y ordinales
 
 # COMMAND ----------
 
@@ -222,13 +252,22 @@ electro_proccessed['OPERATIVO'].value_counts()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Hasta esta parte del codigo se ha realizado la limpìeza de los datos generados de la integracion de diferentes dimensiones y facticas (Datamart), generando una tabla minable, para la fase de modelado se buscar implementar 2 modelos, un modelo de clustering para segmentar los proyectos en clusteres con mas afinidad y asi asignarlos a Gerentes especificos, logrando asi que estos tengan un trabajo mas especializado con proyectos similares. En el segundo modelo se utilizara el flag 'OPERATIVO' para un modelo de clasficacion binaria, ya que la informacion del datamart representa la estructura de proyectos, pero mucho de estos nunca llegan a ejecutarse, por lo que se realizara un submuestreo balanceando la data para los proyectos que si esten operativos, posteriormente se aplicara el modelo generada en la data restante.
+# MAGIC Hasta esta parte del codigo se ha realizado la limpìeza de los datos (utilizando pandas) generados de la integracion de diferentes dimensiones y una factica desde SQL (Datamart), generando finalmente una tabla minable
+# MAGIC
+# MAGIC Para la fase de modelado se buscar implementar 2 modelos:
+# MAGIC - Un modelo de clustering para segmentar los proyectos en clusteres con mayor afinidad y asi asignarlos a los 3 Gerentes de proyectos, logrando asi que estos tengan un trabajo mas especializado y efciente con proyectos similares. 
+# MAGIC - Un modelo de clasficacion binaria utilizando como target el flag 'OPERATIVO', ya que la informacion del datamart representa la estructura de proyectos, pero mucho de estos nunca llegan a ejecutarse, por lo que se realizara un submuestreo balanceando la data para los proyectos que si esten operativos, posteriormente se aplicara el modelo generada en la data restante.
 # MAGIC
 
 # COMMAND ----------
 
 spark_datamart = spark.createDataFrame(electro_proccessed)
 display(spark_datamart)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Modelo con Kmeans
 
 # COMMAND ----------
 
