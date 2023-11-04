@@ -367,4 +367,9 @@ print("El coeficiente Silhouette usando distancias euclidianas al cuadrado es = 
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Se puede observar que se han generado 3 clusteres (Cluster 0 con 183 item, Cluster 1 con 1229 proyectos, Cluster 2 con 597 proyectos), no se realizo una evaluacion inicial para la cantidad de clusteres dado que la empresa unicamente cuenta con 3 gerentes de proyectos, sin embargo se puede observar que los proyectos se encuentran desbalanceados entre los gerentes, por lo que sera recomendable agregar un 4 gerente y generar nuevamente el modelo con 4 clusteres.
+
+# COMMAND ----------
+
 
