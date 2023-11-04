@@ -1,4 +1,8 @@
 # Databricks notebook source
+pip install dataprep
+
+# COMMAND ----------
+
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -10,12 +14,15 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import MinMaxScaler
 
 from pyspark.sql import SparkSession
-from pyspark.ml.feature import VectorAssembler, VectorSlicer
+from pyspark.ml.feature import VectorSlicer
 from pyspark.ml.linalg import Vectors
 from pyspark.sql.functions import col
 from pyspark.ml import Pipeline
 from pyspark.sql import functions as F
-
+from pyspark.sql import SparkSession
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.classification import RandomForestClassifier
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 
@@ -233,6 +240,7 @@ electro_proccessed.head()
 
 # Modificacion de variable objetivo a enteros
 electro_proccessed['OPERATIVO'] = electro_proccessed['OPERATIVO'].replace('FALSE', 0).replace('TRUE', 1)
+electro_proccessed['OPERATIVO'] = electro_proccessed['OPERATIVO'].astype(int)
 
 # COMMAND ----------
 
@@ -256,8 +264,12 @@ electro_proccessed['OPERATIVO'].value_counts()
 # MAGIC
 # MAGIC Para la fase de modelado se buscar implementar 2 modelos:
 # MAGIC - Un modelo de clustering para segmentar los proyectos en clusteres con mayor afinidad y asi asignarlos a los 3 Gerentes de proyectos, logrando asi que estos tengan un trabajo mas especializado y efciente con proyectos similares. 
-# MAGIC - Un modelo de clasficacion binaria utilizando como target el flag 'OPERATIVO', ya que la informacion del datamart representa la estructura de proyectos, pero mucho de estos nunca llegan a ejecutarse, por lo que se realizara un submuestreo balanceando la data para los proyectos que si esten operativos, posteriormente se aplicara el modelo generada en la data restante.
+# MAGIC - Un modelo de clasficacion utilizando como target el flag 'OPERATIVO', ya que la informacion del datamart representa la estructura de proyectos, pero mucho de estos nunca llegan a ejecutarse, por lo que buscara predecir que proyectos si llegaran a ser operativos.
 # MAGIC
+
+# COMMAND ----------
+
+spark = SparkSession.builder.appName("Modelado").getOrCreate()
 
 # COMMAND ----------
 
@@ -340,7 +352,7 @@ train_data, test_data = df_cluster.randomSplit([0.7,0.3])
 
 # COMMAND ----------
 
-kmeans = KMeans().setK(3).setSeed(2023)
+kmeans = KMeans().setK(3).setSeed(1598)
 model = kmeans.fit(train_data)
 
 # COMMAND ----------
@@ -368,8 +380,98 @@ print("El coeficiente Silhouette usando distancias euclidianas al cuadrado es = 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Se puede observar que se han generado 3 clusteres (Cluster 0 con 183 item, Cluster 1 con 1229 proyectos, Cluster 2 con 597 proyectos), no se realizo una evaluacion inicial para la cantidad de clusteres dado que la empresa unicamente cuenta con 3 gerentes de proyectos, sin embargo se puede observar que los proyectos se encuentran desbalanceados entre los gerentes, por lo que sera recomendable agregar un 4 gerente y generar nuevamente el modelo con 4 clusteres.
+# MAGIC Se puede observar que se han generado 3 clusteres (Cluster 0 con 1234 item, Cluster 1 con 191 proyectos, Cluster 2 con 590 proyectos), no se realizo una evaluacion inicial para la cantidad de clusteres dado que la empresa unicamente cuenta con 3 gerentes de proyectos, sin embargo se puede observar que los proyectos se encuentran desbalanceados entre los gerentes, por lo que sera recomendable agregar un 4 gerente y generar nuevamente el modelo con 4 clusteres.
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Modelo con RandomForest
 
+# COMMAND ----------
+
+spark_2 = SparkSession.builder.appName("RandomForestExample").getOrCreate()
+
+# COMMAND ----------
+
+spark_datamart = spark_2.createDataFrame(electro_proccessed)
+display(spark_datamart)
+
+# COMMAND ----------
+
+columns = ['NIVEL_TENSION',
+ 'CANT_TIPO_PRODUCTO_1',
+ 'CANT_TIPO_PRODUCTO_2',
+ 'CANT_TIPO_PRODUCTO_3',
+ 'CANT_TIPO_PRODUCTO_4',
+ 'CANT_TIPO_PRODUCTO_5',
+ 'CANT_TIPO_PRODUCTO_6',
+ 'PRECIO_TOTAL',
+ 'ESTADO_SOLICITUD_CARPETAARMADA',
+ 'ESTADO_SOLICITUD_CARPETACONGESTOR',
+ 'ESTADO_SOLICITUD_CERRARSOLICITUD',
+ 'ESTADO_SOLICITUD_CIERRECONTABLE',
+ 'ESTADO_SOLICITUD_CONCLUSIONOBRA',
+ 'ESTADO_SOLICITUD_CONTTAASIGNADO',
+ 'ESTADO_SOLICITUD_EJECMATMOAPROBADO',
+ 'ESTADO_SOLICITUD_EJECMATMOOBSERV',
+ 'ESTADO_SOLICITUD_ENACTIVACION',
+ 'ESTADO_SOLICITUD_ENCONSTRUCCION',
+ 'ESTADO_SOLICITUD_ENTREGAASBUILT',
+ 'ESTADO_SOLICITUD_INFCONSTAPROBADO',
+ 'ESTADO_SOLICITUD_REVCONTROLADM',
+ 'ESTADO_SOLICITUD_REVINFCONSTRUCCION',
+ 'ESTADO_SOLICITUD_SOLICITUDCERRADA',
+ 'ESTADO_SOLICITUD_SOLREVEJECMATMO',
+ 'SISTEMA_Rural',
+ 'SISTEMA_Tropico',
+ 'SISTEMA_Urbano',
+ 'SISTEMA_ValleAlto',
+ 'SISTEMA_ValleBajo',
+ 'SISTEMA_ValleCentral',
+ 'PROPIEDAD_Alcaldia',
+ 'PROPIEDAD_Cliente',
+ 'PROPIEDAD_Electro',
+ 'PROPIEDAD_Gobernacion',
+ 'PROPIEDAD_INSTALACION_Electro',
+ 'PROPIEDAD_INSTALACION_Exclusivo',
+ 'PROPIEDAD_INSTALACION_Interesado',
+ 'PROYECTO_ALUMBRADO PUBLICO',
+ 'PROYECTO_AMPLIACION',
+ 'PROYECTO_AMPLIACION SUBTERRANEA',
+ 'PROYECTO_ANEXADO',
+ 'PROYECTO_EQUIPOS',
+ 'PROYECTO_MANTENIMIENTO BAJA TENSION',
+ 'PROYECTO_MANTENIMIENTO MEDIA TENSION',
+ 'PROYECTO_REFORMA MANTENIMIENTO',
+ 'PROYECTO_REFORMA REDES DISTRIBUCION',
+ 'PROYECTO_SUBESTACION MT',
+ 'TIPO_PROYECTO_GAS',
+ 'TIPO_PROYECTO_INV',
+ 'TIPO_SERVICIO_AP',
+ 'TIPO_SERVICIO_EH',
+ 'TIPO_SERVICIO_EV',
+ 'TIPO_SERVICIO_PS',
+ 'TIPO_SERVICIO_RE']
+
+assembler = VectorAssembler(inputCols=columns, outputCol="features")
+df_rf = assembler.transform(spark_datamart)
+
+# COMMAND ----------
+
+train, test = df_rf.randomSplit([0.7, 0.3])
+
+# COMMAND ----------
+
+rf = RandomForestClassifier(featuresCol="features", labelCol="OPERATIVO")
+rf_model = rf.fit(train)
+
+# COMMAND ----------
+
+predictions = rf_model.transform(test)
+
+# COMMAND ----------
+
+evaluator = MulticlassClassificationEvaluator(labelCol="OPERATIVO", predictionCol="prediction", metricName="accuracy")
+accuracy = evaluator.evaluate(predictions)
+
+print(f"The accuracy of the Random Forest model is: {accuracy}")
