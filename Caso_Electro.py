@@ -71,7 +71,7 @@ len(df_datamart)
 
 # COMMAND ----------
 
-create_report(df_datamart).show()
+#create_report(df_datamart).show()
 
 # COMMAND ----------
 
