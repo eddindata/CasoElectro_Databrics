@@ -64,56 +64,56 @@ create_report(df_datamart).show()
 # COMMAND ----------
 
 # Analisis Bivariado
-df_datamart.groupby(['OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        }).sort_values(['OPERATIVO'], ascending = True )  
 
 # COMMAND ----------
 
-df_datamart.groupby(['ESTADO_SOLICITUD','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['ESTADO_SOLICITUD','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['SISTEMA','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['SISTEMA','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['NIVEL_TENSION','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['NIVEL_TENSION','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['PROPIEDAD','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['PROPIEDAD','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['PROPIEDAD_INSTALACION','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['PROPIEDAD_INSTALACION','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['PROYECTO','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['PROYECTO','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['TIPO_PROYECTO','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['TIPO_PROYECTO','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean,  'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
 
-df_datamart.groupby(['TIPO_SERVICIO','OPERATIVO']).agg({'TIPO_PRODUCTO_1':np.mean, 'TIPO_PRODUCTO_2':np.mean, 'TIPO_PRODUCTO_3':np.mean, 'TIPO_PRODUCTO_4':np.mean, \
-                                                      'TIPO_PRODUCTO_5':np.mean, 'TIPO_PRODUCTO_6':np.mean, 'CANTIDAD_TOTAL':np.mean, 'PRECIO_TOTAL':np.mean
+df_datamart.groupby(['TIPO_SERVICIO','OPERATIVO']).agg({'CANT_TIPO_PRODUCTO_1':np.mean, 'CANT_TIPO_PRODUCTO_2':np.mean, 'CANT_TIPO_PRODUCTO_3':np.mean, 'CANT_TIPO_PRODUCTO_4':np.mean, \
+                                                      'CANT_TIPO_PRODUCTO_5':np.mean, 'CANT_TIPO_PRODUCTO_6':np.mean, 'PRECIO_TOTAL':np.mean
                                        })
 
 # COMMAND ----------
@@ -148,10 +148,6 @@ df_datamart['TIPO_PROYECTO'].fillna(most_frequent_value, inplace=True)
 
 # COMMAND ----------
 
-sns.heatmap(df_datamart.isnull(), cbar=False)
-
-# COMMAND ----------
-
 df_datamart.isnull().sum()
 
 # COMMAND ----------
@@ -162,8 +158,8 @@ df_datamart.shape
 # COMMAND ----------
 
 # Tratamiento de Datos Atipicos con Z-Score
-z = np.abs(stats.zscore(df_datamart[['TIPO_PRODUCTO_1', 'TIPO_PRODUCTO_2', 'TIPO_PRODUCTO_3', 'TIPO_PRODUCTO_4',
-                                       'TIPO_PRODUCTO_5', 'TIPO_PRODUCTO_6', 'CANTIDAD_TOTAL', 'PRECIO_TOTAL']]))
+z = np.abs(stats.zscore(df_datamart[['CANT_TIPO_PRODUCTO_1', 'CANT_TIPO_PRODUCTO_2', 'CANT_TIPO_PRODUCTO_3', 'CANT_TIPO_PRODUCTO_4',
+                                       'CANT_TIPO_PRODUCTO_5', 'CANT_TIPO_PRODUCTO_6', 'PRECIO_TOTAL']]))
 z.head()
 
 # COMMAND ----------
@@ -172,15 +168,15 @@ z.head()
 
 # COMMAND ----------
 
-# Reduccion de 7063 clientes a 6651
+# Reduccion de 7054 clientes a 6674
 df_datamart = df_datamart[(z<3).all(axis=1)]
 df_datamart.shape
 
 # COMMAND ----------
 
 # Variables a ser reescaladas con MinMax Encoder
-features_mimmax = ['TIPO_PRODUCTO_1', 'TIPO_PRODUCTO_2', 'TIPO_PRODUCTO_3', 'TIPO_PRODUCTO_4',
-                                       'TIPO_PRODUCTO_5', 'TIPO_PRODUCTO_6', 'CANTIDAD_TOTAL', 'PRECIO_TOTAL']
+features_mimmax = ['CANT_TIPO_PRODUCTO_1', 'CANT_TIPO_PRODUCTO_2', 'CANT_TIPO_PRODUCTO_3', 'CANT_TIPO_PRODUCTO_4',
+                                       'CANT_TIPO_PRODUCTO_5', 'CANT_TIPO_PRODUCTO_6', 'PRECIO_TOTAL']
 
 objeto_scaler = MinMaxScaler()
 df_datamart[features_mimmax] = objeto_scaler.fit_transform(df_datamart[features_mimmax])
@@ -190,7 +186,7 @@ df_datamart.head()
 
 # Variables cualitativas nominales a convertirse en Dummies
 features = ['ESTADO_SOLICITUD', 'SISTEMA', 'PROPIEDAD', 'PROPIEDAD_INSTALACION'
-            , 'PROYECTO', 'TIPO_PROYECTO', 'TIPO_SERVICIO', 'ID_PROVEEDOR', 'ID_PLAN_INVERSION']
+            , 'PROYECTO', 'TIPO_PROYECTO', 'TIPO_SERVICIO']
 
 dummies = pd.get_dummies(df_datamart[features])
 electro_proccessed = pd.concat([df_datamart.drop(features, axis=1), dummies], axis=1)
