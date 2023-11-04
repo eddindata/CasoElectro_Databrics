@@ -211,9 +211,120 @@ electro_proccessed.shape
 
 # COMMAND ----------
 
+electro_proccessed['OPERATIVO'].value_counts()
+
+# COMMAND ----------
+
 # MAGIC %md
-# MAGIC ## A partir de aqui se utilizara spark para el modelo
+# MAGIC ## Desarrollo del Modelo con SPARK
 # MAGIC
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Hasta esta parte del codigo se ha realizado la limpìeza de los datos generados de la integracion de diferentes dimensiones y facticas (Datamart), generando una tabla minable, para la fase de modelado se buscar implementar 2 modelos, un modelo de clustering para segmentar los proyectos en clusteres con mas afinidad y asi asignarlos a Gerentes especificos, logrando asi que estos tengan un trabajo mas especializado con proyectos similares. En el segundo modelo se utilizara el flag 'OPERATIVO' para un modelo de clasficacion binaria, ya que la informacion del datamart representa la estructura de proyectos, pero mucho de estos nunca llegan a ejecutarse, por lo que se realizara un submuestreo balanceando la data para los proyectos que si esten operativos, posteriormente se aplicara el modelo generada en la data restante.
+# MAGIC
+
+# COMMAND ----------
+
+spark_datamart = spark.createDataFrame(electro_proccessed)
+display(spark_datamart)
+
+# COMMAND ----------
+
+spark_datamart_cluster = spark_datamart.drop('OPERATIVO')
+
+
+# COMMAND ----------
+
+columns = ['NIVEL_TENSION',
+ 'CANT_TIPO_PRODUCTO_1',
+ 'CANT_TIPO_PRODUCTO_2',
+ 'CANT_TIPO_PRODUCTO_3',
+ 'CANT_TIPO_PRODUCTO_4',
+ 'CANT_TIPO_PRODUCTO_5',
+ 'CANT_TIPO_PRODUCTO_6',
+ 'PRECIO_TOTAL',
+ 'ESTADO_SOLICITUD_CARPETAARMADA',
+ 'ESTADO_SOLICITUD_CARPETACONGESTOR',
+ 'ESTADO_SOLICITUD_CERRARSOLICITUD',
+ 'ESTADO_SOLICITUD_CIERRECONTABLE',
+ 'ESTADO_SOLICITUD_CONCLUSIONOBRA',
+ 'ESTADO_SOLICITUD_CONTTAASIGNADO',
+ 'ESTADO_SOLICITUD_EJECMATMOAPROBADO',
+ 'ESTADO_SOLICITUD_EJECMATMOOBSERV',
+ 'ESTADO_SOLICITUD_ENACTIVACION',
+ 'ESTADO_SOLICITUD_ENCONSTRUCCION',
+ 'ESTADO_SOLICITUD_ENTREGAASBUILT',
+ 'ESTADO_SOLICITUD_INFCONSTAPROBADO',
+ 'ESTADO_SOLICITUD_REVCONTROLADM',
+ 'ESTADO_SOLICITUD_REVINFCONSTRUCCION',
+ 'ESTADO_SOLICITUD_SOLICITUDCERRADA',
+ 'ESTADO_SOLICITUD_SOLREVEJECMATMO',
+ 'SISTEMA_Rural',
+ 'SISTEMA_Tropico',
+ 'SISTEMA_Urbano',
+ 'SISTEMA_ValleAlto',
+ 'SISTEMA_ValleBajo',
+ 'SISTEMA_ValleCentral',
+ 'PROPIEDAD_Alcaldia',
+ 'PROPIEDAD_Cliente',
+ 'PROPIEDAD_Electro',
+ 'PROPIEDAD_Gobernacion',
+ 'PROPIEDAD_INSTALACION_Electro',
+ 'PROPIEDAD_INSTALACION_Exclusivo',
+ 'PROPIEDAD_INSTALACION_Interesado',
+ 'PROYECTO_ALUMBRADO PUBLICO',
+ 'PROYECTO_AMPLIACION',
+ 'PROYECTO_AMPLIACION SUBTERRANEA',
+ 'PROYECTO_ANEXADO',
+ 'PROYECTO_EQUIPOS',
+ 'PROYECTO_MANTENIMIENTO BAJA TENSION',
+ 'PROYECTO_MANTENIMIENTO MEDIA TENSION',
+ 'PROYECTO_REFORMA MANTENIMIENTO',
+ 'PROYECTO_REFORMA REDES DISTRIBUCION',
+ 'PROYECTO_SUBESTACION MT',
+ 'TIPO_PROYECTO_GAS',
+ 'TIPO_PROYECTO_INV',
+ 'TIPO_SERVICIO_AP',
+ 'TIPO_SERVICIO_EH',
+ 'TIPO_SERVICIO_EV',
+ 'TIPO_SERVICIO_PS',
+ 'TIPO_SERVICIO_RE']
+
+assembler = VectorAssembler(inputCols=columns, outputCol="features")
+df_cluster = assembler.transform(spark_datamart_cluster)
+
+# COMMAND ----------
+
+train_data, test_data = df_cluster.randomSplit([0.7,0.3])
+
+# COMMAND ----------
+
+kmeans = KMeans().setK(3).setSeed(2023)
+model = kmeans.fit(train_data)
+
+# COMMAND ----------
+
+predictions = model.transform(test_data)
+
+# COMMAND ----------
+
+predictions_pandas = predictions.sample(fraction=0.5).toPandas()
+predictions_pandas.head()
+
+# COMMAND ----------
+
+predictions.groupBy(F.col('prediction')).count().show()
+
+# COMMAND ----------
+
+evaluador = ClusteringEvaluator()
+
+# COMMAND ----------
+
+silhouette = evaluador.evaluate(predictions)
+print("El coeficiente Silhouette usando distancias euclidianas al cuadrado es = " + str(silhouette))
 
 # COMMAND ----------
 
