@@ -25,6 +25,8 @@ from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
+from pyspark.sql.functions import rand
+from pyspark.ml.evaluation import BinaryClassificationEvaluator
 
 # COMMAND ----------
 
@@ -61,6 +63,10 @@ df_datamart.dtypes
 
 # COMMAND ----------
 
+df_datamart.describe().T
+
+# COMMAND ----------
+
 #Tamaño del Set de datos para entrenamiento y test
 len(df_datamart)
 
@@ -71,7 +77,7 @@ len(df_datamart)
 
 # COMMAND ----------
 
-#create_report(df_datamart).show()
+# create_report(df_datamart).show()
 
 # COMMAND ----------
 
@@ -253,6 +259,10 @@ electro_proccessed['OPERATIVO'].value_counts()
 
 # COMMAND ----------
 
+electro_proccessed.head()
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Desarrollo del Modelo con SPARK
 # MAGIC
@@ -398,6 +408,24 @@ display(spark_datamart)
 
 # COMMAND ----------
 
+# Para un balanceo de datos primero seleccionaremos todos los valores true del target
+target_true = spark_datamart.where(spark_datamart['OPERATIVO'] == '1') 
+target_true.count()
+
+# COMMAND ----------
+
+# Posteriormente escogeremos los valores false del target (Al doble de la cantidad de true, es decir 1484)
+target_false = spark_datamart.orderBy(rand()).limit(1484)
+target_false.count()
+
+# COMMAND ----------
+
+# Combinamos el nuevo dataframe
+spark_datamart_final = target_true.union(target_false)
+spark_datamart_final.count()
+
+# COMMAND ----------
+
 columns = ['NIVEL_TENSION',
  'CANT_TIPO_PRODUCTO_1',
  'CANT_TIPO_PRODUCTO_2',
@@ -454,7 +482,7 @@ columns = ['NIVEL_TENSION',
  'TIPO_SERVICIO_RE']
 
 assembler = VectorAssembler(inputCols=columns, outputCol="features")
-df_rf = assembler.transform(spark_datamart)
+df_rf = assembler.transform(spark_datamart_final)
 
 # COMMAND ----------
 
@@ -471,7 +499,22 @@ predictions = rf_model.transform(test)
 
 # COMMAND ----------
 
+predictions_rf = predictions.sample(fraction=0.5).toPandas()
+predictions_rf.head()
+
+# COMMAND ----------
+
+predictions.groupBy(F.col('prediction')).count().show()
+
+# COMMAND ----------
+
 evaluator = MulticlassClassificationEvaluator(labelCol="OPERATIVO", predictionCol="prediction", metricName="accuracy")
 accuracy = evaluator.evaluate(predictions)
 
-print(f"The accuracy of the Random Forest model is: {accuracy}")
+print(f"El accuracy es: {accuracy}")
+
+# COMMAND ----------
+
+evaluator_auc = BinaryClassificationEvaluator(rawPredictionCol="prediction", labelCol="OPERATIVO", metricName="areaUnderROC")
+auc = evaluator_auc.evaluate(predictions)
+print("El valor del AUC es:", auc)
